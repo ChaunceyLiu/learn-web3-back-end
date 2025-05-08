@@ -3,8 +3,7 @@
     "builds": [
       {
         "src": "dist/vercel.js",  
-        "use": "@vercel/node",
-        "caching": false
+        "use": "@vercel/node"
       }
     ],
     "routes": [
