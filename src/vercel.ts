@@ -1,20 +1,44 @@
 // src/vercel.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 创建 Express 实例
-const server = express();
+const expressServer = express();
 
-const bootstrap = async (): Promise<express.Express> => {
-  // 使用 ExpressAdapter 将 Nest.js 挂载到 Express
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
-  // 确保监听 0.0.0.0 和 Vercel 的 PORT
-  await app.listen(process.env.PORT || 3000, '0.0.0.0');
-  return server;
+expressServer.use((req, _res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+  });
+
+// 初始化 NestJS 应用（单例模式）
+const createNestServer = async (expressInstance: express.Express) => {
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressInstance),
+    { 
+      logger: ['error', 'warn'], // 仅保留必要日志
+      bodyParser: true
+    }
+  );
+
+  // 执行初始化但不启动 HTTP 服务
+  await app.init();
+  return expressInstance;
 };
 
-// 导出 Express 实例（直接处理请求）
-export default bootstrap().then((app) => app);
+// 初始化 Express 应用（缓存实例）
+const initializedApp = createNestServer(expressServer);
+
+// 导出 Vercel 无服务器函数处理程序
+export default async (req: VercelRequest, res: VercelResponse) => {
+  await initializedApp;
+  expressServer(req as express.Request, res as unknown as express.Response, (err) => {
+    if (err) {
+      console.error('Request handling error:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+};

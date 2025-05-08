@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChainDatumDto } from './dto/create-chain-datum.dto';
 import { UpdateChainDatumDto } from './dto/update-chain-datum.dto';
-import { secretKey, apiKey, passphrase } from '@/utils/request';
+import { secretKey, apiKey, passphrase } from '../utils/request';
 import { RestClient, OrderRequest } from 'okx-api';
-import { fetchHttp, headersParams, getRequestUrl } from '@/utils/request';
 
 @Injectable()
 export class ChainDataService {
