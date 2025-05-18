@@ -15,10 +15,10 @@ import { UpdateCrawlerDto } from './dto/update-crawler.dto';
 export class CrawlerController {
   constructor(private readonly crawlerService: CrawlerService) {}
 
-  @Post()
-  create(@Body() createCrawlerDto: CreateCrawlerDto) {
-    return this.crawlerService.create(createCrawlerDto);
-  }
+  // @Post()
+  // create(@Body() createCrawlerDto: CreateCrawlerDto) {
+  //   return this.crawlerService.create(createCrawlerDto);
+  // }
 
   @Get()
   findAll() {
@@ -30,18 +30,25 @@ export class CrawlerController {
   //   return this.crawlerService.findOne(+id);
   // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCrawlerDto: UpdateCrawlerDto) {
-    return this.crawlerService.update(+id, updateCrawlerDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateCrawlerDto: UpdateCrawlerDto) {
+  //   return this.crawlerService.update(+id, updateCrawlerDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.crawlerService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.crawlerService.remove(+id);
+  // }
 
   @Get('/scrapeData')
   async scrapeData(): Promise<any> {
     return await this.crawlerService.scrapeData();
+  }
+
+  @Get('/analyze')
+  async analyze() {
+    const data = await this.crawlerService.scrapeData();
+    console.log(data) 
+    // return this.crawlerService.generateAnalysis(data);
   }
 }
