@@ -50,6 +50,8 @@ export class ChainDataService {
   // 获取综合币价
 
   async getCurrenciesPrice(params) {
+    console.log('params======================================');
+    console.log('params', params);
     const client = new RestClient(
       {
         apiKey: apiKey,
